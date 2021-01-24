@@ -1,4 +1,4 @@
-package com.example.demo
+package ru.phoenigm.idempotency.curator
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication

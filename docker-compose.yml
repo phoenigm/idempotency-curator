@@ -2,30 +2,30 @@ version: '3'
 
 services:
 
-  template-app:
-    container_name: template-app
+  idempotency-curator:
+    container_name: idempotency-curator
     restart: always
     build:
-      context: ./template-app
-    hostname: template-app
+      context: ./idempotency-curator
+    hostname: idempotency-curator
     ports:
       - 20000:20000
     networks:
       - backend
 
-  db-template-app:
-    container_name: template-app
+  db-idempotency-curator:
+    container_name: idempotency-curator
     restart: always
     image: postgres:12.2-alpine
-    hostname: template-app
+    hostname: idempotency-curator
     volumes:
-      - db-template-app:/var/lib/postgresql/data:delegated
+      - db-idempotency-curator:/var/lib/postgresql/data:delegated
     ports:
       - 5432:5432
     environment:
-      - POSTGRES_USER=template-app
-      - POSTGRES_PASSWORD=template-app
-      - POSTGRES_DB=template-app
+      - POSTGRES_USER=idempotency-curator
+      - POSTGRES_PASSWORD=idempotency-curator
+      - POSTGRES_DB=idempotency-curator
     networks:
       - backend
 
@@ -34,4 +34,4 @@ networks:
   frontend:
 
 volumes:
-  db-template-app:
+  db-idempotency-curator:

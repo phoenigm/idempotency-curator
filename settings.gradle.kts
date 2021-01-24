@@ -1,3 +1,3 @@
-rootProject.name = "spring-boot-kotlin-gradle-template"
+rootProject.name = "idempotency-curator"
 
-include("template-app")
+include("idempotency-curator")
