@@ -1,3 +1,3 @@
-# Spring Boot Kotlin Gradle template
+# Idempotency Curator
 
-Start your Spring Boot application with this template
+Framework for easy building idempotency-supporting applications  
