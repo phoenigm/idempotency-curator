@@ -1,5 +1,6 @@
 object Vers {
     const val kotlin = "1.4.20"
+    const val kotlinx = "1.4.3"
 
     const val springBoot = "2.4.2"
 
@@ -15,6 +16,7 @@ object Vers {
 }
 
 object Libs {
+    const val kotlinCoroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-core:${Vers.kotlinx}"
     const val kotlinStdlib = "org.jetbrains.kotlin:kotlin-stdlib:${Vers.kotlin}"
     const val kotlinReflect = "org.jetbrains.kotlin:kotlin-reflect:${Vers.kotlin}"
     const val kotlinJdk8 = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${Vers.kotlin}"

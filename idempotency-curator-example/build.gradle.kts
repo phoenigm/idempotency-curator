@@ -15,6 +15,7 @@ dependencies {
     implementation(Libs.kotlinStdlib)
     implementation(Libs.kotlinReflect)
     implementation(Libs.kotlinJdk8)
+    implementation(Libs.kotlinCoroutines)
     runtimeOnly(Libs.jaxb)
 
     implementation(Libs.swagger)
@@ -22,6 +23,7 @@ dependencies {
     implementation(Libs.jacksonKotlin)
 
     implementation(Libs.springWeb)
+    implementation(project(":idempotency-curator"))
 
     testImplementation(Libs.springTest) {
         exclude("org.junit.vintage", "junit-vintage-engine")

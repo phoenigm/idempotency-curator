@@ -19,7 +19,7 @@ plugins {
 }
 
 subprojects {
-    group = "com.example.template"
+    group = "ru.phoenigm.idempotency.curator"
 
     repositories {
         mavenCentral()
@@ -29,6 +29,10 @@ subprojects {
         withType<KotlinCompile> {
             kotlinOptions.jvmTarget = "1.8"
             kotlinOptions.allWarningsAsErrors = true
+        }
+
+        withType<Wrapper> {
+            gradleVersion = "6.8.1"
         }
 
         withType<Test> {
