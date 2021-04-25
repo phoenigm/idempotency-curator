@@ -1,6 +1,7 @@
 package ru.phoenigm.idempotency.curator.core
 
 import org.springframework.stereotype.Component
+import ru.phoenigm.idempotency.curator.core.data.IdempotencyKeyHolder
 
 @Component
 open class IdempotencyKeyProcessor(
@@ -21,11 +22,6 @@ open class IdempotencyKeyProcessor(
             }
         }
         return false
-    }
-
-    fun releaseLocks() {
-        println("release all locks")
-        idempotencyKeyHolder.clear()
     }
 
     fun releaseLock(httpData: HttpData) {
