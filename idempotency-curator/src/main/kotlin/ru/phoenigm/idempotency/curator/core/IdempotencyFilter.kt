@@ -1,9 +1,7 @@
-package ru.phoenigm.idempotency.curator.spring
+package ru.phoenigm.idempotency.curator.core
 
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
-import ru.phoenigm.idempotency.curator.core.HttpData
-import ru.phoenigm.idempotency.curator.core.IdempotencyKeyProcessor
 import javax.servlet.Filter
 import javax.servlet.FilterChain
 import javax.servlet.ServletRequest
@@ -15,28 +13,27 @@ import javax.servlet.http.HttpServletResponse
 @Component
 class IdempotencyFilter(
     private val idempotencyKeyProcessor: IdempotencyKeyProcessor,
-    private val idempotentCallResolver: IdempotentCallResolver
+    private val idempotentEndpointResolver: IdempotentEndpointResolver,
+    private val config: IdempotencyKeyConfig
 ) : Filter {
 
     override fun doFilter(request: ServletRequest, response: ServletResponse, chain: FilterChain) {
         val httpRequest = request as HttpServletRequest
         val httpResponse = response as HttpServletResponse
-        val idempotencyKey = httpRequest.getHeader("IdempotencyKey")
+        val idempotencyKey = httpRequest.getHeader(config.header)
         val url = httpRequest.servletPath
         val method = httpRequest.method
         val httpData = HttpData(url, method)
-        println(httpData)
 
-
-        if (!idempotentCallResolver.isIdempotent(httpData)) {
+        if (!idempotentEndpointResolver.isIdempotent(httpData)) {
             chain.doFilter(request, response)
             return
         }
-        if (!idempotencyKeyProcessor.process(httpData, idempotencyKey)) {
-            httpResponse.sendError(409, "lovi error")
+        if (!idempotencyKeyProcessor.process(idempotencyKey, httpData)) {
+            httpResponse.sendError(config.errorHttpCode, config.errorMessage)
         } else {
             chain.doFilter(request, response)
-            idempotencyKeyProcessor.releaseLock(httpData)
+            idempotencyKeyProcessor.releaseLock(idempotencyKey)
         }
     }
 

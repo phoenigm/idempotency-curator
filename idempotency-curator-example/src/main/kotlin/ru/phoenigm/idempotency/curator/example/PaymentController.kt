@@ -15,3 +15,11 @@ class PaymentController(private val paymentService: PaymentService) {
     }
 
 }
+
+data class PaymentRequest(
+    val data: String
+)
+
+data class PaymentResponse(
+    val status: String
+)

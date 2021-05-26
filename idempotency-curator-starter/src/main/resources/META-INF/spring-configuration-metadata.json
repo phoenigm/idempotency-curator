@@ -1,0 +1,31 @@
+{
+  "groups": [
+    {
+      "name": "spring.idempotency.curator",
+      "type": "ru.phoenigm.idempotency.curator.starter.configuration.IdempotencyCuratorProperties"
+    }
+  ],
+  "properties": [
+    {
+      "name": "spring.idempotency.curator.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "Flag of active idempotency curator Spring module"
+    }
+  ],
+  "hints": [
+    {
+      "name": "spring.idempotency.curator.enabled",
+      "values": [
+        {
+          "value": true,
+          "description": "Enable idempotency curator"
+        },
+        {
+          "value": false,
+          "description": "Disable idempotency curator"
+        }
+      ]
+    }
+  ]
+}

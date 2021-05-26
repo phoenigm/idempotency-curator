@@ -13,10 +13,10 @@ buildscript {
 
 plugins {
     kotlin("jvm") version Vers.kotlin apply true
+    kotlin("plugin.spring") version Vers.kotlin apply true
     id("org.jetbrains.kotlin.plugin.noarg") version Vers.kotlin apply true
-    id("org.springframework.boot") version Vers.springBoot apply true
-    id("io.spring.dependency-management") version "1.0.11.RELEASE"
-    kotlin("plugin.spring") version Vers.kotlin
+    id("io.spring.dependency-management") version "1.0.11.RELEASE" apply true
+    id("org.springframework.boot") version Vers.springBoot apply false
 }
 
 subprojects {
@@ -25,7 +25,6 @@ subprojects {
     apply {
         plugin("org.jetbrains.kotlin.jvm")
         plugin("org.jetbrains.kotlin.plugin.noarg")
-        plugin("org.springframework.boot")
         plugin("io.spring.dependency-management")
     }
 
@@ -42,12 +41,19 @@ subprojects {
             kotlinOptions.allWarningsAsErrors = true
         }
 
-        withType<Wrapper> {
-            gradleVersion = "6.8.1"
-        }
-
         withType<Test> {
             useJUnitPlatform()
+        }
+
+        if (project.name == "idempotency-curator-starter" || project.name == "idempotency-curator") {
+            withType<org.springframework.boot.gradle.tasks.bundling.BootJar> {
+                enabled = false
+            }
+
+            withType<Jar> {
+                enabled = true
+
+            }
         }
     }
 }

@@ -13,25 +13,14 @@ services:
     networks:
       - backend
 
-  db-idempotency-curator:
-    container_name: idempotency-curator
-    restart: always
-    image: postgres:12.2-alpine
-    hostname: idempotency-curator
-    volumes:
-      - db-idempotency-curator:/var/lib/postgresql/data:delegated
-    ports:
-      - 5432:5432
+  redis:
+    image: 'bitnami/redis:latest'
     environment:
-      - POSTGRES_USER=idempotency-curator
-      - POSTGRES_PASSWORD=idempotency-curator
-      - POSTGRES_DB=idempotency-curator
+      - ALLOW_EMPTY_PASSWORD=yes
     networks:
       - backend
+    ports:
+      - 6379:6379
 
 networks:
   backend:
-  frontend:
-
-volumes:
-  db-idempotency-curator:
