@@ -4,3 +4,9 @@ spring:
   idempotency:
     curator:
       enabled: true
+      keyStorage: REDIS
+  redis:
+    port: 6379
+
+  main:
+    allow-bean-definition-overriding: true

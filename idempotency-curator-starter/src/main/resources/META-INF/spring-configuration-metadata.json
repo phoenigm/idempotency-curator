@@ -11,6 +11,12 @@
       "type": "java.lang.Boolean",
       "defaultValue": true,
       "description": "Flag of active idempotency curator Spring module"
+    },
+    {
+      "name": "spring.idempotency.curator.keyStorage",
+      "type": "java.lang.String",
+      "defaultValue": "REDIS",
+      "description": "Storage"
     }
   ],
   "hints": [
@@ -24,6 +30,19 @@
         {
           "value": false,
           "description": "Disable idempotency curator"
+        }
+      ]
+    },
+    {
+      "name": "spring.idempotency.curator.keyStorage",
+      "values": [
+        {
+          "value": "REDIS",
+          "description": "Enable Redis storage"
+        },
+        {
+          "value": "HAZELCAST",
+          "description": "Enable Hazelcast storage"
         }
       ]
     }

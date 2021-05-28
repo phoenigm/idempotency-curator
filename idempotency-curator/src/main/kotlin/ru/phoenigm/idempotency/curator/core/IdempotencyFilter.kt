@@ -21,19 +21,35 @@ class IdempotencyFilter(
         val httpRequest = request as HttpServletRequest
         val httpResponse = response as HttpServletResponse
         val idempotencyKey = httpRequest.getHeader(config.header)
-        val url = httpRequest.servletPath
-        val method = httpRequest.method
-        val httpData = HttpData(url, method)
 
-        if (!idempotentEndpointResolver.isIdempotent(httpData)) {
+        if (idempotencyKey == null) {
             chain.doFilter(request, response)
             return
         }
-        if (!idempotencyKeyProcessor.process(idempotencyKey, httpData)) {
-            httpResponse.sendError(config.errorHttpCode, config.errorMessage)
-        } else {
-            chain.doFilter(request, response)
-            idempotencyKeyProcessor.releaseLock(idempotencyKey)
+        handleIdempotencyHeader(idempotencyKey, httpRequest, httpResponse, chain)
+    }
+
+    private fun handleIdempotencyHeader(
+        idempotencyKey: String,
+        request: HttpServletRequest,
+        response: HttpServletResponse,
+        chain: FilterChain
+    ) {
+        val httpEndpoint = HttpEndpoint(request.method, request.servletPath)
+
+        idempotentEndpointResolver.getSettingsForEndpoint(httpEndpoint)?.let {
+            when (idempotencyKeyProcessor.process(idempotencyKey, it)) {
+                IdempotencyProcessingStatus.LOCKED -> {
+                    response.sendError(it.errorHttpCode, it.errorMessage)
+                }
+                IdempotencyProcessingStatus.FREE -> {
+                    chain.doFilter(request, response)
+                    idempotencyKeyProcessor.releaseLock(idempotencyKey)
+                }
+                IdempotencyProcessingStatus.TTL_SPECIFIED -> {
+                    chain.doFilter(request, response)
+                }
+            }
         }
     }
 

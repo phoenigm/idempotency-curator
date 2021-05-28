@@ -10,14 +10,15 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
 import ru.phoenigm.idempotency.curator.core.*
 import ru.phoenigm.idempotency.curator.core.data.IdempotencyKeyHolder
+import ru.phoenigm.idempotency.curator.starter.configuration.data.HazelcastAutoConfiguration
 import ru.phoenigm.idempotency.curator.starter.configuration.data.IdempotencyKeyHolderAutoConfiguration
 import ru.phoenigm.idempotency.curator.starter.configuration.data.RedisAutoConfiguration
-import java.time.Duration
 import java.util.concurrent.ConcurrentHashMap
 
 @Import(
-    IdempotencyKeyHolderAutoConfiguration::class,
-    RedisAutoConfiguration::class
+    RedisAutoConfiguration::class,
+    HazelcastAutoConfiguration::class,
+    IdempotencyKeyHolderAutoConfiguration::class
 )
 @ConditionalOnProperty(
     prefix = "spring",
@@ -50,35 +51,36 @@ open class IdempotencyCuratorAutoConfiguration {
     @Bean
     open fun idempotencyKeyProcessor(
         idempotencyKeyHolder: IdempotencyKeyHolder,
-        idempotencyKeyConfig: IdempotencyKeyConfig
-    ) = IdempotencyKeyProcessor(idempotencyKeyHolder, idempotencyKeyConfig)
+    ) = IdempotencyKeyProcessor(idempotencyKeyHolder)
 
     @Bean
     open fun idempotencyKeyConfig(
         idempotencyCuratorProperties: IdempotencyCuratorProperties
     ) = idempotencyCuratorProperties.let {
         IdempotencyKeyConfig(
-            lockTtl = Duration.ZERO,
-            retryCount = 1,
-            retryDelay = Duration.ZERO,
-            header = "IdempotencyKey",
-            errorMessage = "sd",
-            errorHttpCode = 409
+            lockTtl = it.lockTtl,
+            retryCount = it.retryCount,
+            retryDelay = it.retryDelay,
+            header = it.header,
+            errorMessage = it.errorMessage,
+            errorHttpCode = it.errorHttpCode
         )
     }
 
     @Bean
-    open fun idempotentEndpoints(): MutableSet<HttpData> = ConcurrentHashMap.newKeySet()
+    open fun idempotentEndpoints(): MutableSet<IdempotentEndpointSettings> = ConcurrentHashMap.newKeySet()
 
     @Bean
-    open fun callback(idempotentEndpoints: MutableSet<HttpData>) = IdempotentCallback(idempotentEndpoints)
+    open fun callback(
+        idempotentEndpoints: MutableSet<IdempotentEndpointSettings>,
+    ) = IdempotentAnnotationPostProcessorCallback(idempotentEndpoints)
 
     @Bean
-    open fun idempotentAnnotationPostProcessor(callback: IdempotentCallback) =
-        IdempotentAnnotationPostProcessor(callback)
+    open fun idempotentAnnotationPostProcessor(annotationPostProcessorCallback: IdempotentAnnotationPostProcessorCallback) =
+        IdempotentAnnotationPostProcessor(annotationPostProcessorCallback)
 
     @Bean
-    open fun idempotentCallResolver(idempotentEndpoints: Set<HttpData>) =
+    open fun idempotentCallResolver(idempotentEndpoints: Set<IdempotentEndpointSettings>) =
         IdempotentEndpointResolver(idempotentEndpoints)
 
 }

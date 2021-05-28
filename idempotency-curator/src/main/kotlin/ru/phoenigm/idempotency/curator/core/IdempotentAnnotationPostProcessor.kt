@@ -5,11 +5,13 @@ import org.springframework.stereotype.Component
 import org.springframework.util.ReflectionUtils
 
 @Component
-class IdempotentAnnotationPostProcessor(private val callback: IdempotentCallback) : BeanPostProcessor {
+class IdempotentAnnotationPostProcessor(
+    private val annotationPostProcessorCallback: IdempotentAnnotationPostProcessorCallback
+) : BeanPostProcessor {
 
     override fun postProcessBeforeInitialization(bean: Any, beanName: String): Any {
         val cls = bean::class.java
-        ReflectionUtils.doWithMethods(cls, callback)
+        ReflectionUtils.doWithMethods(cls, annotationPostProcessorCallback)
         return bean
     }
 }

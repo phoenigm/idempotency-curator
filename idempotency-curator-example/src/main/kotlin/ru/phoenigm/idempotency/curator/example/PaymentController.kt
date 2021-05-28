@@ -6,9 +6,11 @@ import org.springframework.web.bind.annotation.RestController
 import ru.phoenigm.idempotency.curator.core.Idempotent
 
 @RestController
-class PaymentController(private val paymentService: PaymentService) {
+class PaymentController(
+    private val paymentService: PaymentService
+) {
 
-    @Idempotent(header = "IdempotencyKey")
+    @Idempotent(retryCount = 3, retryDelay = "PT0.3S")
     @PostMapping("/payments")
     fun makePayment(@RequestBody request: PaymentRequest): PaymentResponse {
         return paymentService.makePayment(request)
@@ -17,7 +19,7 @@ class PaymentController(private val paymentService: PaymentService) {
 }
 
 data class PaymentRequest(
-    val data: String
+    val amount: Long,
 )
 
 data class PaymentResponse(

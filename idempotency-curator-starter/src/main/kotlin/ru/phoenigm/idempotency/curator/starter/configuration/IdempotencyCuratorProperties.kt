@@ -8,10 +8,16 @@ import java.time.Duration
 @ConfigurationProperties(prefix = "spring.idempotency.curator")
 data class IdempotencyCuratorProperties(
     val enabled: Boolean = true,
-    val lockTtl: Duration = Duration.ZERO,
+    val keyStorage: IdempotencyKeyStorage = IdempotencyKeyStorage.REDIS,
+    val lockTtl: Duration? = null,
     val retryCount: Int = 10,
     val retryDelay: Duration = Duration.ofMillis(100),
     val header: String = "IdempotencyKey",
     val errorMessage: String = "Idempotent call declined",
     val errorHttpCode: Int = 409
 )
+
+enum class IdempotencyKeyStorage {
+    HAZELCAST,
+    REDIS
+}

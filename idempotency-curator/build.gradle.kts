@@ -6,7 +6,7 @@ dependencies {
     implementation(Libs.kotlinJdk8)
     implementation(Libs.kotlinCoroutines)
     implementation(Libs.kotlinLogging)
-    implementation("com.hazelcast:hazelcast-spring:4.2")
+    api("com.hazelcast:hazelcast-spring:4.2")
     api("org.springframework.boot:spring-boot-starter-data-redis:2.4.5")
 
     runtimeOnly(Libs.jaxb)

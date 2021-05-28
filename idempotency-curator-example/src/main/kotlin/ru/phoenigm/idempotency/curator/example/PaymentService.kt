@@ -11,9 +11,9 @@ class PaymentService {
     }
 
     fun makePayment(request: PaymentRequest): PaymentResponse {
-        logger.info { "Processing payment: ${request.data}" }
-        Thread.sleep(5000)
-        logger.info { "Processing payment was successful: ${request.data}" }
+        logger.info { "Processing payment: $request" }
+        Thread.sleep(request.amount)
+        logger.info { "Processing payment was successful: $request" }
         return PaymentResponse("success")
     }
 }

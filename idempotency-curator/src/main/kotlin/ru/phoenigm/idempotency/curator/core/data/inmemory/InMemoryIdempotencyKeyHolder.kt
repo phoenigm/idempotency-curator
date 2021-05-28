@@ -3,13 +3,14 @@ package ru.phoenigm.idempotency.curator.core.data.inmemory
 import org.springframework.stereotype.Component
 import ru.phoenigm.idempotency.curator.core.HttpData
 import ru.phoenigm.idempotency.curator.core.data.IdempotencyKeyHolder
+import java.time.Duration
 import java.util.concurrent.ConcurrentHashMap
 
 @Component
 open class InMemoryIdempotencyKeyHolder : IdempotencyKeyHolder {
     private val idempotencyKeyMap = ConcurrentHashMap<String, HttpData>()
 
-    override fun put(idempotencyKey: String, httpData: HttpData) {
+    override fun put(idempotencyKey: String, httpData: HttpData, ttl: Duration?) {
         idempotencyKeyMap[idempotencyKey] = httpData
     }
 

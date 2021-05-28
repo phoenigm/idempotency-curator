@@ -7,27 +7,44 @@ import ru.phoenigm.idempotency.curator.core.data.IdempotencyKeyHolder
 @Component
 open class IdempotencyKeyProcessor(
     private val idempotencyKeyHolder: IdempotencyKeyHolder,
-    private val idempotencyKeyConfig: IdempotencyKeyConfig
 ) {
 
     companion object {
         private val logger = KotlinLogging.logger { }
     }
 
-    fun process(idempotencyKey: String, httpData: HttpData): Boolean {
-        logger.info { "Start processing idempotency key = $idempotencyKey, http data = $httpData" }
-        val retryCount = idempotencyKeyConfig.retryCount
+    fun process(idempotencyKey: String, endpointSettings: IdempotentEndpointSettings): IdempotencyProcessingStatus {
+        logger.info { "Start processing idempotency key = $idempotencyKey, endpoint settings = $endpointSettings" }
+        if (isLockTtlSpecified(endpointSettings) && !isLockAcquired(idempotencyKey)) {
+            logger.info { "Ttl specified for idempotency key = $idempotencyKey" }
+            serveIdempotencyKey(idempotencyKey, endpointSettings)
+            return IdempotencyProcessingStatus.TTL_SPECIFIED
+        }
 
-        repeat(retryCount) {
+        repeat(endpointSettings.retryCount) { retry ->
             if (isLockAcquired(idempotencyKey)) {
-                logger.info { "Locked for idempotency key: $idempotencyKey, http data: $httpData" }
+                logger.info { "Locked for idempotency key: $idempotencyKey, endpoint settings = $endpointSettings" }
+                endpointSettings.retryDelay?.also {
+                    logger.error { "Retry number ${retry + 1}. Time ms: ${it.toMillis()}" }
+                    Thread.sleep(it.toMillis())
+                }
             } else {
-                idempotencyKeyHolder.put(idempotencyKey, httpData)
-                return true
+                serveIdempotencyKey(idempotencyKey, endpointSettings)
+                return IdempotencyProcessingStatus.FREE
             }
         }
-        return false
+        return IdempotencyProcessingStatus.LOCKED
     }
+
+    private fun serveIdempotencyKey(idempotencyKey: String, endpointSettings: IdempotentEndpointSettings) {
+        idempotencyKeyHolder.put(
+            idempotencyKey,
+            HttpData(endpointSettings.url, endpointSettings.method),
+            endpointSettings.ttl
+        )
+    }
+
+    private fun isLockTtlSpecified(endpointSettings: IdempotentEndpointSettings) = endpointSettings.ttl != null
 
     fun releaseLock(idempotencyKey: String) {
         logger.info { "Lock released for idempotency key: $idempotencyKey" }

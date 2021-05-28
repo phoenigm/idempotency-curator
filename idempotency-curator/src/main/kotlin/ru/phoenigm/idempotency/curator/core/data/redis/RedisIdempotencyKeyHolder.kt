@@ -1,32 +1,40 @@
 package ru.phoenigm.idempotency.curator.core.data.redis
 
+import mu.KotlinLogging
 import org.springframework.data.redis.core.HashOperations
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Component
 import ru.phoenigm.idempotency.curator.core.HttpData
 import ru.phoenigm.idempotency.curator.core.data.IdempotencyKeyHolder
+import java.time.Duration
 
 @Component
 open class RedisIdempotencyKeyHolder(
-    redisTemplate: RedisTemplate<String, HttpData>
+    private val redisTemplate: RedisTemplate<String, HttpData>
 ) : IdempotencyKeyHolder {
+
     private val hashOperations: HashOperations<String, String, HttpData> = redisTemplate.opsForHash()
 
     companion object {
-        private const val key = "IdempotentKey"
+        val logger = KotlinLogging.logger { }
     }
 
-    override fun put(idempotencyKey: String, httpData: HttpData) {
-        hashOperations.put(key, idempotencyKey, httpData)
+    override fun put(idempotencyKey: String, httpData: HttpData, ttl: Duration?) {
+        logger.info { "Put data = $httpData for idempotency key = $idempotencyKey" }
+        hashOperations.put(idempotencyKey, idempotencyKey, httpData)
+        ttl?.also {
+            logger.info { "Set expiration time = $ttl for idempotency key = $idempotencyKey" }
+            redisTemplate.expire(idempotencyKey, ttl)
+        }
     }
 
     override fun get(idempotencyKey: String): HttpData? {
-        return hashOperations.get(key, idempotencyKey)
+        return hashOperations.get(idempotencyKey, idempotencyKey)
     }
 
     override fun remove(idempotencyKey: String): HttpData? {
         val httpData = get(idempotencyKey)
-        hashOperations.delete(key, idempotencyKey)
+        hashOperations.delete(idempotencyKey, idempotencyKey)
         return httpData
     }
 }
