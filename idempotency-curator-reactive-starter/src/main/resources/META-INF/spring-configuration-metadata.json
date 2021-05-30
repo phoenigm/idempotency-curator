@@ -1,19 +1,19 @@
 {
   "groups": [
     {
-      "name": "spring.idempotency.curator",
-      "type": "ru.phoenigm.idempotency.curator.configuration.IdempotencyCuratorProperties"
+      "name": "spring.idempotency.curator.reactive",
+      "type": "ru.phoenigm.idempotency.curator.configuration.reactive.IdempotencyCuratorReactiveAutoConfiguration"
     }
   ],
   "properties": [
     {
-      "name": "spring.idempotency.curator.enabled",
+      "name": "spring.idempotency.curator.reactive.enabled",
       "type": "java.lang.Boolean",
       "defaultValue": true,
       "description": "Flag of active idempotency curator Spring module"
     },
     {
-      "name": "spring.idempotency.curator.keyStorage",
+      "name": "spring.idempotency.curator.reactive.keyStorage",
       "type": "java.lang.String",
       "defaultValue": "REDIS",
       "description": "Storage"
@@ -21,7 +21,7 @@
   ],
   "hints": [
     {
-      "name": "spring.idempotency.curator.enabled",
+      "name": "spring.idempotency.curator.reactive.enabled",
       "values": [
         {
           "value": true,
@@ -34,7 +34,7 @@
       ]
     },
     {
-      "name": "spring.idempotency.curator.keyStorage",
+      "name": "spring.idempotency.curator.reactive.keyStorage",
       "values": [
         {
           "value": "REDIS",

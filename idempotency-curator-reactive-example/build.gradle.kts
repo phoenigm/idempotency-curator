@@ -9,9 +9,9 @@ dependencies {
     implementation(Libs.kotlinCoroutines)
     implementation(Libs.kotlinLogging)
 
-    implementation(Libs.springWeb)
+    implementation(Libs.springWebflux)
     implementation(Libs.jacksonKotlin)
-    implementation(project(":idempotency-curator-starter"))
+    implementation(project(":idempotency-curator-reactive-starter"))
 
     testImplementation(Libs.springTest) {
         exclude("org.junit.vintage", "junit-vintage-engine")

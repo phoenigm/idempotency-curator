@@ -12,8 +12,7 @@ dependencies {
     implementation(Libs.springBootDependencies)
     implementation(Libs.hazelcast)
     implementation(Libs.springBootRedis)
-    implementation(Libs.servletApi)
 
     api(project(":idempotency-curator-core"))
-    implementation(project(":idempotency-curator"))
+    implementation(project(":idempotency-curator-reactive"))
 }

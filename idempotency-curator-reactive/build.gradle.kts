@@ -4,7 +4,7 @@ dependencies {
     implementation(Libs.kotlinJdk8)
     implementation(Libs.kotlinLogging)
 
-    implementation(Libs.springWeb)
+    implementation(Libs.springWebflux)
 
     implementation(project(":idempotency-curator-core"))
 }
