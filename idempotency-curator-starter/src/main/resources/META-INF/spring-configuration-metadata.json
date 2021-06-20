@@ -38,11 +38,11 @@
       "values": [
         {
           "value": "REDIS",
-          "description": "Enable Redis storage"
+          "description": "Set Redis as idempotency key storage"
         },
         {
           "value": "HAZELCAST",
-          "description": "Enable Hazelcast storage"
+          "description": "Set Hazelcast as idempotency key storage"
         }
       ]
     }

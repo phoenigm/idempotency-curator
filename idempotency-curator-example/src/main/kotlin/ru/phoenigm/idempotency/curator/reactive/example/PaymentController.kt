@@ -10,7 +10,7 @@ class PaymentController(
     private val paymentService: PaymentService
 ) {
 
-    @Idempotent(retryCount = 3, retryDelay = "PT0.3S")
+    @Idempotent(idempotencyKeyTtl = "PT8H")
     @PostMapping("/payments")
     fun makePayment(@RequestBody request: PaymentRequest): PaymentResponse {
         return paymentService.makePayment(request)

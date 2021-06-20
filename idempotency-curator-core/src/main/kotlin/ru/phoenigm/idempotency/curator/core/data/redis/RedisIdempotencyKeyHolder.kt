@@ -15,15 +15,9 @@ open class RedisIdempotencyKeyHolder(
 
     private val hashOperations: HashOperations<String, String, HttpData> = redisTemplate.opsForHash()
 
-    companion object {
-        val logger = KotlinLogging.logger { }
-    }
-
     override fun put(idempotencyKey: String, httpData: HttpData, ttl: Duration?) {
-        logger.info { "Put data = $httpData for idempotency key = $idempotencyKey" }
         hashOperations.put(idempotencyKey, idempotencyKey, httpData)
         ttl?.also {
-            logger.info { "Set expiration time = $ttl for idempotency key = $idempotencyKey" }
             redisTemplate.expire(idempotencyKey, ttl)
         }
     }

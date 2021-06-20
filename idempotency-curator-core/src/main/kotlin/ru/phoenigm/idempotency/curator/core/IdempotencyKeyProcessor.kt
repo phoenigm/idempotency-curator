@@ -9,23 +9,15 @@ open class IdempotencyKeyProcessor(
     private val idempotencyKeyHolder: IdempotencyKeyHolder,
 ) {
 
-    companion object {
-        private val logger = KotlinLogging.logger { }
-    }
-
     fun process(idempotencyKey: String, endpointSettings: IdempotentEndpointSettings): IdempotencyProcessingStatus {
-        logger.info { "Start processing idempotency key = $idempotencyKey, endpoint settings = $endpointSettings" }
         if (isLockTtlSpecified(endpointSettings) && !isLockAcquired(idempotencyKey)) {
-            logger.info { "Ttl specified for idempotency key = $idempotencyKey" }
             serveIdempotencyKey(idempotencyKey, endpointSettings)
             return IdempotencyProcessingStatus.TTL_SPECIFIED
         }
 
         repeat(endpointSettings.retryCount) { retry ->
             if (isLockAcquired(idempotencyKey)) {
-                logger.info { "Locked for idempotency key: $idempotencyKey, endpoint settings = $endpointSettings" }
                 endpointSettings.retryDelay?.also {
-                    logger.info { "Retry number ${retry + 1}. Time ms: ${it.toMillis()}" }
                     Thread.sleep(it.toMillis())
                 }
             } else {
@@ -47,7 +39,6 @@ open class IdempotencyKeyProcessor(
     private fun isLockTtlSpecified(endpointSettings: IdempotentEndpointSettings) = endpointSettings.ttl != null
 
     fun releaseLock(idempotencyKey: String) {
-        logger.info { "Lock released for idempotency key: $idempotencyKey" }
         idempotencyKeyHolder.remove(idempotencyKey)
     }
 

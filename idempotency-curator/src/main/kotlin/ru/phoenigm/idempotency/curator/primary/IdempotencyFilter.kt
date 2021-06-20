@@ -27,17 +27,16 @@ class IdempotencyFilter(
             chain.doFilter(request, response)
             return
         }
-        handleIdempotencyHeader(idempotencyKey, httpRequest, httpResponse, chain)
+        handleIdempotencyKey(idempotencyKey, httpRequest, httpResponse, chain)
     }
 
-    private fun handleIdempotencyHeader(
+    private fun handleIdempotencyKey(
         idempotencyKey: String,
         request: HttpServletRequest,
         response: HttpServletResponse,
         chain: FilterChain
     ) {
         val httpEndpoint = HttpEndpoint(request.method, request.servletPath)
-
         idempotentEndpointResolver.getSettingsForEndpoint(httpEndpoint)?.let {
             when (idempotencyKeyProcessor.process(idempotencyKey, it)) {
                 IdempotencyProcessingStatus.LOCKED -> {
